@@ -1,9 +1,18 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Tech_Inventory_Management_System.Data;
+using Tech_Inventory_Management_System.Interfaces.Repositories;
+using Tech_Inventory_Management_System.Interfaces.Services;
+using Tech_Inventory_Management_System.Middleware;
+using Tech_Inventory_Management_System.Repositories;
+using Tech_Inventory_Management_System.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Add Controllers
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
