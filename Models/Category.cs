@@ -7,8 +7,5 @@
         public string CategoryName { get; set; } = string.Empty;
 
         public bool IsActive { get; set; } = true;
-
-        // Navigation Property
-        public ICollection<Product> Products { get; set; } = new List<Product>();
     }
 }
