@@ -4,16 +4,14 @@ namespace Tech_Inventory_Management_System.Interfaces.Services
 {
     public interface IProductService
     {
-        Task<IEnumerable<ProductDto>> GetAllProductsAsync();
+        Task<IEnumerable<ProductResponseDto>> GetAllProductsAsync();
 
-        Task<ProductDto?> GetProductByIdAsync(int productId);
+        Task<ProductResponseDto?> GetProductByIdAsync(int id);
 
-        Task<ProductDto> AddProductAsync(CreateProductDto productDto);
+        Task AddProductAsync(CreateProductDto dto);
 
-        Task<bool> UpdateProductAsync(UpdateProductDto productDto);
+        Task UpdateProductAsync(int id, UpdateProductDto dto);
 
-        Task<bool> DeleteProductAsync(int productId);
-
-        Task<IEnumerable<ProductDto>> SearchProductsAsync(string productName);
+        Task DeleteProductAsync(int id);
     }
 }

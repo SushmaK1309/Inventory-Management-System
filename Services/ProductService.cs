@@ -1,46 +1,122 @@
 ﻿using Tech_Inventory_Management_System.DTOs.Product;
 using Tech_Inventory_Management_System.Interfaces.Repositories;
 using Tech_Inventory_Management_System.Interfaces.Services;
+using Tech_Inventory_Management_System.Models;
 
 namespace Tech_Inventory_Management_System.Services
 {
     public class ProductService : IProductService
     {
         private readonly IProductRepository _productRepository;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public ProductService(IProductRepository productRepository)
+        public ProductService(
+            IProductRepository productRepository,
+            ICategoryRepository categoryRepository)
         {
             _productRepository = productRepository;
+            _categoryRepository = categoryRepository;
         }
 
-        public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()
+        public async Task<IEnumerable<ProductResponseDto>> GetAllProductsAsync()
         {
-            throw new NotImplementedException();
+            var products = await _productRepository.GetAllAsync();
+
+            return products.Select(product => new ProductResponseDto
+            {
+                ProductId = product.ProductId,
+                ProductName = product.ProductName,
+                Brand = product.Brand,
+                Price = product.Price,
+                Quantity = product.Quantity,
+                CategoryId = product.CategoryId,
+                IsActive = product.IsActive,
+                CreatedDate = product.CreatedDate
+            });
         }
 
-        public async Task<ProductDto?> GetProductByIdAsync(int productId)
+        public async Task<ProductResponseDto?> GetProductByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var product = await _productRepository.GetByIdAsync(id);
+
+            if (product == null)
+                return null;
+
+            return new ProductResponseDto
+            {
+                ProductId = product.ProductId,
+                ProductName = product.ProductName,
+                Brand = product.Brand,
+                Price = product.Price,
+                Quantity = product.Quantity,
+                CategoryId = product.CategoryId,
+                IsActive = product.IsActive,
+                CreatedDate = product.CreatedDate
+            };
         }
 
-        public async Task<ProductDto> AddProductAsync(CreateProductDto productDto)
+        public async Task AddProductAsync(CreateProductDto dto)
         {
-            throw new NotImplementedException();
+            // Validate Product Name
+            if (string.IsNullOrWhiteSpace(dto.ProductName))
+                throw new Exception("Product name is required.");
+
+            // Check duplicate product
+            var existingProduct = await _productRepository.GetByNameAsync(dto.ProductName);
+
+            if (existingProduct != null)
+                throw new Exception("Product already exists.");
+
+            // Check Category exists
+            var category = await _categoryRepository.GetByIdAsync(dto.CategoryId);
+
+            if (category == null)
+                throw new Exception("Category does not exist.");
+
+            var product = new Product
+            {
+                ProductName = dto.ProductName,
+                Brand = dto.Brand,
+                Price = dto.Price,
+                Quantity = dto.Quantity,
+                CategoryId = dto.CategoryId,
+                IsActive = true
+            };
+
+            await _productRepository.AddAsync(product);
         }
 
-        public async Task<bool> UpdateProductAsync(UpdateProductDto productDto)
+        public async Task UpdateProductAsync(int id, UpdateProductDto dto)
         {
-            throw new NotImplementedException();
+            var product = await _productRepository.GetByIdAsync(id);
+
+            if (product == null)
+                throw new Exception("Product not found.");
+
+            // Check Category exists
+            var category = await _categoryRepository.GetByIdAsync(dto.CategoryId);
+
+            if (category == null)
+                throw new Exception("Category does not exist.");
+
+            product.ProductName = dto.ProductName;
+            product.Brand = dto.Brand;
+            product.Price = dto.Price;
+            product.Quantity = dto.Quantity;
+            product.CategoryId = dto.CategoryId;
+            product.IsActive = dto.IsActive;
+
+            await _productRepository.UpdateAsync(product);
         }
 
-        public async Task<bool> DeleteProductAsync(int productId)
+        public async Task DeleteProductAsync(int id)
         {
-            throw new NotImplementedException();
-        }
+            var product = await _productRepository.GetByIdAsync(id);
 
-        public async Task<IEnumerable<ProductDto>> SearchProductsAsync(string productName)
-        {
-            throw new NotImplementedException();
+            if (product == null)
+                throw new Exception("Product not found.");
+
+            await _productRepository.DeleteAsync(product);
         }
     }
 }

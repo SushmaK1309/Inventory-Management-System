@@ -4,7 +4,9 @@
     {
         public int ProductId { get; set; }
 
-        public required string ProductName { get; set; }
+        public string ProductName { get; set; } = string.Empty;
+
+        public string Brand { get; set; } = string.Empty;
 
         public decimal Price { get; set; }
 
@@ -12,8 +14,8 @@
 
         public int CategoryId { get; set; }
 
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-
         public bool IsActive { get; set; } = true;
+
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
     }
 }

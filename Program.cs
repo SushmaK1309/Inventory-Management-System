@@ -15,7 +15,9 @@ builder.Services.AddControllers();
 
 // Register Dependency Injection
 builder.Services.AddSingleton<ICategoryRepository, InMemoryCategoryRepository>();
+builder.Services.AddSingleton<IProductRepository, InMemoryProductRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
