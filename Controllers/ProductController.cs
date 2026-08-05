@@ -30,9 +30,6 @@ namespace Smart_Inventory_Management_System.Controllers
         {
             var product = await _productService.GetProductByIdAsync(id);
 
-            if (product == null)
-                return NotFound("Product not found.");
-
             return Ok(product);
         }
 
@@ -40,6 +37,10 @@ namespace Smart_Inventory_Management_System.Controllers
         [HttpPost]
         public async Task<IActionResult> AddProduct(CreateProductDto dto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             await _productService.AddProductAsync(dto);
 
             return Ok("Product added successfully.");
@@ -49,6 +50,10 @@ namespace Smart_Inventory_Management_System.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(int id, UpdateProductDto dto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             await _productService.UpdateProductAsync(id, dto);
 
             return Ok("Product updated successfully.");

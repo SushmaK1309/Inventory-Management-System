@@ -1,4 +1,6 @@
-﻿using Tech_Inventory_Management_System.DTOs.Product;
+﻿using Smart_Inventory_Management_System.Exceptions;
+using System.ComponentModel.DataAnnotations;
+using Tech_Inventory_Management_System.DTOs.Product;
 using Tech_Inventory_Management_System.Interfaces.Repositories;
 using Tech_Inventory_Management_System.Interfaces.Services;
 using Tech_Inventory_Management_System.Models;
@@ -35,12 +37,12 @@ namespace Tech_Inventory_Management_System.Services
             });
         }
 
-        public async Task<ProductResponseDto?> GetProductByIdAsync(int id)
+        public async Task<ProductResponseDto> GetProductByIdAsync(int id)
         {
             var product = await _productRepository.GetByIdAsync(id);
 
             if (product == null)
-                return null;
+                throw new ProductNotFoundException(id);
 
             return new ProductResponseDto
             {
@@ -59,19 +61,19 @@ namespace Tech_Inventory_Management_System.Services
         {
             // Validate Product Name
             if (string.IsNullOrWhiteSpace(dto.ProductName))
-                throw new Exception("Product name is required.");
+                throw new ValidationException("Product name is required.");
 
             // Check duplicate product
             var existingProduct = await _productRepository.GetByNameAsync(dto.ProductName);
 
             if (existingProduct != null)
-                throw new Exception("Product already exists.");
+                throw new DuplicateProductException(dto.ProductName);
 
             // Check Category exists
             var category = await _categoryRepository.GetByIdAsync(dto.CategoryId);
 
             if (category == null)
-                throw new Exception("Category does not exist.");
+                throw new CategoryNotFoundException(dto.CategoryId);
 
             var product = new Product
             {
@@ -91,13 +93,13 @@ namespace Tech_Inventory_Management_System.Services
             var product = await _productRepository.GetByIdAsync(id);
 
             if (product == null)
-                throw new Exception("Product not found.");
+                throw new ProductNotFoundException(id);
 
             // Check Category exists
             var category = await _categoryRepository.GetByIdAsync(dto.CategoryId);
 
             if (category == null)
-                throw new Exception("Category does not exist.");
+                throw new CategoryNotFoundException(dto.CategoryId);
 
             product.ProductName = dto.ProductName;
             product.Brand = dto.Brand;
@@ -114,7 +116,7 @@ namespace Tech_Inventory_Management_System.Services
             var product = await _productRepository.GetByIdAsync(id);
 
             if (product == null)
-                throw new Exception("Product not found.");
+    throw new ProductNotFoundException(id);
 
             await _productRepository.DeleteAsync(product);
         }

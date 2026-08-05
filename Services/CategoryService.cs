@@ -1,4 +1,6 @@
-﻿using Tech_Inventory_Management_System.DTOs.Category;
+﻿using Smart_Inventory_Management_System.Exceptions;
+using System.ComponentModel.DataAnnotations;
+using Tech_Inventory_Management_System.DTOs.Category;
 using Tech_Inventory_Management_System.Interfaces.Repositories;
 using Tech_Inventory_Management_System.Interfaces.Services;
 using Tech_Inventory_Management_System.Models;
@@ -26,12 +28,12 @@ namespace Tech_Inventory_Management_System.Services
             });
         }
 
-        public async Task<CategoryResponseDto?> GetCategoryByIdAsync(int id)
+        public async Task<CategoryResponseDto> GetCategoryByIdAsync(int id)
         {
             var category = await _repository.GetByIdAsync(id);
 
             if (category == null)
-                return null;
+                throw new CategoryNotFoundException(id);
 
             return new CategoryResponseDto
             {
@@ -44,12 +46,12 @@ namespace Tech_Inventory_Management_System.Services
         public async Task AddCategoryAsync(CreateCategoryDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.CategoryName))
-                throw new Exception("Category Name is required.");
+                throw new ValidationException("Category Name is required.");
 
             var existing = await _repository.GetByNameAsync(dto.CategoryName);
 
             if (existing != null)
-                throw new Exception("Category already exists.");
+                throw new DuplicateCategoryException(dto.CategoryName);
 
             var category = new Category
             {
@@ -64,7 +66,7 @@ namespace Tech_Inventory_Management_System.Services
             var category = await _repository.GetByIdAsync(id);
 
             if (category == null)
-                throw new Exception("Category not found.");
+                throw new CategoryNotFoundException(id);
 
             category.CategoryName = dto.CategoryName;
             category.IsActive = dto.IsActive;
@@ -77,7 +79,7 @@ namespace Tech_Inventory_Management_System.Services
             var category = await _repository.GetByIdAsync(id);
 
             if (category == null)
-                throw new Exception("Category not found.");
+                throw new CategoryNotFoundException(id);
 
             await _repository.DeleteAsync(category);
         }

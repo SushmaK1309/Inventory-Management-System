@@ -26,9 +26,6 @@ namespace Tech_Inventory_Management_System.Controllers
         {
             var category = await _service.GetCategoryByIdAsync(id);
 
-            if (category == null)
-                return NotFound();
-
             return Ok(category);
         }
 
@@ -36,7 +33,8 @@ namespace Tech_Inventory_Management_System.Controllers
         public async Task<IActionResult> Create(CreateCategoryDto dto)
         {
             await _service.AddCategoryAsync(dto);
-            return Ok("Category created successfully.");
+
+            return StatusCode(201, "Category created successfully.");
         }
 
         [HttpPut("{id}")]
